@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub-credentials'
         DOCKERHUB_REPO = 'YOUR_DOCKERHUB_USERNAME'
-        GITOPS_REPO = 'https://github.com/YOUR_GITHUB_USER/task-manager-gitops.git'
+        GITOPS_REPO = 'https://github.com/TriguiMohamedYassine/task-manager-gitops.git'
         GITOPS_CREDENTIALS_ID = 'github-gitops-token'
         COMMIT_HASH = "${env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'latest'}"
     }
