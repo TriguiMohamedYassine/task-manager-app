@@ -16,27 +16,20 @@ pipeline {
             }
         }
 
-        stage('Test Backend & Build Frontend') {
+        stage('Test Backend') {
             steps {
-                dir('task-manager-app/backend') {
-                    // Test Spring Boot application with Maven
-                    sh 'mvn clean test'
-                }
-                dir('task-manager-app/frontend') {
-                    // Test and build Frontend
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
+                // Run tests inside standard Maven container (no local maven required on Jenkins)
+                sh 'docker run --rm -v "$PWD/backend":/workspace -w /workspace maven:3.9-eclipse-temurin-17 mvn clean test -B'
             }
         }
 
         stage('Build Docker Images') {
             steps {
                 script {
-                    dir('task-manager-app/backend') {
+                    dir('backend') {
                         sh "docker build -t ${DOCKERHUB_REPO}/task-manager-backend:${COMMIT_HASH} ."
                     }
-                    dir('task-manager-app/frontend') {
+                    dir('frontend') {
                         sh "docker build -t ${DOCKERHUB_REPO}/task-manager-frontend:${COMMIT_HASH} ."
                     }
                 }
@@ -63,7 +56,7 @@ pipeline {
                         sed -i 's|image: .*/task-manager-frontend:.*|image: ${DOCKERHUB_REPO}/task-manager-frontend:${COMMIT_HASH}|g' frontend/deployment.yaml
                         git config user.name "jenkins-bot"
                         git config user.email "jenkins@ci-cd.local"
-                        git commit -am "chore(release): update image tags to commit ${COMMIT_HASH}"
+                        git commit -am "chore(release): update image tags to commit ${COMMIT_HASH}" || echo "No changes to commit"
                         git push origin main
                     """
                 }
