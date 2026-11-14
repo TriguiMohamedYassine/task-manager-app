@@ -16,20 +16,15 @@ pipeline {
             }
         }
 
-        stage('Test Backend') {
-            steps {
-                // Run tests inside standard Maven container (no local maven required on Jenkins)
-                sh 'docker run --rm -v "$PWD/backend":/workspace -w /workspace maven:3.9-eclipse-temurin-17 mvn clean test -B'
-            }
-        }
-
-        stage('Build Docker Images') {
+        stage('Build & Test Docker Images') {
             steps {
                 script {
                     dir('backend') {
+                        // Multi-stage build executes 'mvn clean test package' internally
                         sh "docker build -t ${DOCKERHUB_REPO}/task-manager-backend:${COMMIT_HASH} ."
                     }
                     dir('frontend') {
+                        // Multi-stage build executes 'npm run build' internally
                         sh "docker build -t ${DOCKERHUB_REPO}/task-manager-frontend:${COMMIT_HASH} ."
                     }
                 }

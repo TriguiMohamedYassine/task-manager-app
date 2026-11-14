@@ -6,7 +6,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
 COPY src ./src
-RUN mvn clean package -DskipTests -B
+RUN mvn clean test package -B
 
 # Stage 2: Minimal runtime image
 FROM eclipse-temurin:17-jre-alpine
