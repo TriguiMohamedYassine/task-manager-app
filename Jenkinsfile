@@ -47,8 +47,8 @@ pipeline {
                     sh """
                         git clone https://${GIT_USER}:${GIT_TOKEN}@${GITOPS_REPO.replace('https://', '')} gitops-repo
                         cd gitops-repo/kubernetes
-                        sed -i 's|image: .*/task-manager-backend:.*|image: ${DOCKERHUB_REPO}/task-manager-backend:${COMMIT_HASH}|g' backend/deployment.yaml
-                        sed -i 's|image: .*/task-manager-frontend:.*|image: ${DOCKERHUB_REPO}/task-manager-frontend:${COMMIT_HASH}|g' frontend/deployment.yaml
+                        sed -i 's|image: .*backend.*|image: ${DOCKERHUB_REPO}/task-manager-backend:${COMMIT_HASH}|g' backend/deployment.yaml
+                        sed -i 's|image: .*frontend.*|image: ${DOCKERHUB_REPO}/task-manager-frontend:${COMMIT_HASH}|g' frontend/deployment.yaml
                         git config user.name "jenkins-bot"
                         git config user.email "jenkins@ci-cd.local"
                         git commit -am "chore(release): update image tags to commit ${COMMIT_HASH}" || echo "No changes to commit"
